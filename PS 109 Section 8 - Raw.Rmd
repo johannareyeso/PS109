@@ -1,0 +1,273 @@
+---
+title: "PS 109 Section 8"
+output: html_document
+date: "2023-03-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+#setup
+library(ggplot2)
+library(IRkernel)
+library(dplyr)
+
+IRkernel::installspec()
+
+jupyter notebook
+
+
+#install.packages("dplyr")
+```
+This first part is the continuation of Section 7. Start where you left off. 
+
+# PS 109 Section 7, March 10, 2023
+
+We are now entering the more hands-on series of section. Throughout the next weeks, you will learn and practice basic skills for the quantitative analysis of data in political science. 
+
+First, we are going to explore an important source of data for Latinx politics and explore its structure and meaning through the codebook. A codebook goes through the process that researchers undertake when assigning value to their data. It explains how researchers think about their data, how they code their variables, define them, and how they perform calculations. The codebook is the recipe and the dataframe is the dish.   
+
+The American National Election Studies (ANES) produces data from its own surveys on voting, public opinion, and political participation. This data ranges from 1948 to 2020. 
+
+For this class, we will be working with the ANES Latino data, which you can find on Bcourses, under Section Materials -> Data Sources. More experienced R users can download the data and perform tasks directly on their desktops, using RStudio. 
+
+The anes_latino dataframe is the subsample of the general anes data that only includes Latinx/o/a respondents. 
+
+## Jupyter Notebook
+A Jupyter Notebook is an online, interactive computing environment, composed of different types of cells. Cells are chunks of code or text that are used to break up a larger notebook into smaller, more manageable parts and to let the viewer modify and interact with the elements of the notebook.
+
+This notebook is an R Markdown (RMD) file, consisting of 2 different kinds of cells: text and code. A text cell (like this one) contains text, while a code cell contains expressions in R, the programming language that you will be using.
+
+## Data Exploration
+We will be working with R Markdown files, as they allow us to keep both notes and code in a single document. 
+
+### Download the data, set your working directory, and open load the data into R
+
+First, we will open the ANES Latino data and explore the dataframe and related codebook. 
+
+To set up your working directory, you can click on Session on the main menu and then on 'Set Working Directory' and select the folder in your computer in which you want to store all files related to section.
+
+Alternatively, you can use the 'setwd' command. To learn how to use any command, you can always look for help within R, or Google how to do a specific task. 
+
+```{r}
+#If working on Rstudio directly from your desktop, make sure to set your working directory
+setwd("C:/Users/hanna/Documents/GitHub/PS109S2023")
+
+#The question mark allows us to ask R for help about a particular command
+```
+# Section 7
+
+## Review of key concepts
+
+* What is a data frame?
+** What do columns and rows represent?
+* What is a variable? A place holder for certain values.
+* What is an observation?
+* What is an object?
+* What is a command?
+
+```{r}
+#load data using the 'read.csv("name")' command. Advanced: load data and store it into an object
+
+
+#object_name <- object_contents
+
+anes <- read.csv("anes_latino.csv")
+
+anes
+
+#Why might we want to create objects?
+
+#Now let's take a look at the header of our dataframem using the command 'head()'
+
+head(anes)
+
+#How many variables do we see?
+
+#What if we only want to see the first three rows?
+
+
+#What if we want to view the entire dataframe? Use the 'print' function.
+
+
+
+#Find the dimensions of your dataframe using the command 'dim'- what does dimensions mean in this context?
+
+
+#How many rows does the data set have? How many columns? What do these represent?
+
+
+```
+## Understanding data contents and variables
+
+A dataset and dataframe are many times used interchangeably, the subtle difference is the structure. A $\textbf{dataset}$ is a set or collection of data, broadly defined. A \textbf{dataframe} is a dataset in rectangular format, meaning it is organized in rows and columns. This makes it easier to understand and interact, or perform functions, with the data. 
+
+In R, functions are a task or action to perform with an input. The functions we used above are basic functions included in R, but we can also create our own functions and assign them a name. 
+
+input -> function -> output 
+
+### What is the difference between a variable and an observation?
+An observation is information on a particular variable for a particular subject or unit of observation.
+
+```{r}
+#How many observations are in this dataframe? Use the command 'nrow'
+
+
+#How do we check for missing observations or missing values? Use the command 'is.na'
+
+
+#For advanced R users. How else might we want to check for missing values?
+
+```
+#### What are the units of observation in this dataframe?
+
+To understand what the variable names and values mean, it is vital to understand the related codebook. As mentioned above, a codebook provides a description of each variable, including its name, label, data type, and values. It also includes information about how the variable was measured, how missing values are coded, and any special codes or categories used in the variable. 
+
+* Why might researchers want to create a thorough and clear codebook?
+
+#### Let's dive into the ANES codebook
+
+This dataframe contains many variables! Of these, we might not be interested in all. For today, we will focus on variables related to voting and demographic characteristics; it is a Latinx politics course after all...
+
+First, open the codebook. You can do this either on Bcourses or on the working directory set for this file. Scroll down through the codebook and extract the following important details:
+
+* How many people were surveyed?
+* What year was the data gathered?
+* What are the unit of observations? 
+**  How many?
+* What kind of study is this? Time series/panel?
+** What is the difference?  
+
+Time series data involves measurements or observations of a single variable over time, while panel data involves measurements or observations of multiple variables over time for a group of individuals or entities. In this case, the data is time series because it does not follow the same people over time; it is always taken from interviews or surveys with a random, representative sample of people. 
+
+** Why does it matter for this study?
+*  What is the population?
+*  What is a sample?
+*  Why are the data weighted?
+
+
+# PS 109 Section 8, March 22, 2023
+
+```{r}
+#reload data and assign to an object 
+```
+
+
+## Understanding variables of interest
+Now that we know the connection between the codebook and the data, let's gather some information about Latinx politics. Discuss the following with a partner.
+
+* What kind of demographic data did the survey collect?
+* What is the percentage of people who are Spanish, Hispanic or Latino?
+* What countries of origin do respondents come from?
+** Where do these categories come from?
+* What kind of political preferences and participation did the survey collect?
+
+Time to play around with two variables of interest. Let's say we are interested in evaluating how many Latinx/os/as voted. Which variables should we look at?
+
+* dem_hisp
+* dem_hisptyp_1st
+* postvote_rvote
+
+#What kind of variables are these? 
+
+#### How do we select one variable within a dataframe? Using the $ symbol.
+
+```{r}
+#df$variable of interest
+
+#Refer to the dem_hisp and postvote_rvote variables using the $ symbol
+
+#Partner Exercise: Count for how many observations we have data in each variable. Use the sum command and is.na, plus the negation sign '!'
+
+
+#Count the distribution of the variable values, i.e. how many of each value in the range. Use the command 'table' and refer to the specific variable. 
+
+```
+
+
+```{r}
+#Check the range of the two variables using the 'range' command
+
+
+#Why is the range 1 to 1?
+
+
+#How do we interpret this range? Let's take a look at the codebook again.
+
+
+#Let's assign shorter object names to these
+
+
+```
+#### Is there a relationship between country of origin and voting? Let's look at the correlation between the variables
+
+```{r}
+#Use the command 'cor'
+
+
+#How can we interpret this? Maybe correlation is not the best way to look at the relationship between these two variables.
+
+#Find the mean of postvote_rvote for Mexican Americans only. Use the following syntax. 
+
+#mean(data$var1[data$var2 == ?], na.rm = TRUE)
+
+
+#Whar does na.rm do in this case? Is it applicable here? Why/why not?
+
+
+```
+##### Let's try to plot them! 
+
+###### Advanced users do the below using 'ggplot'. Then re-label the axis, add a title and subtitle, and change the color scale (bringing in a palette). Refer to the 'ggplot' documentation. Assign your plot to an object and open it.  
+
+```{r}
+
+#Create a histogram for each variable, using 'hist'
+
+
+#Create a bar plot of org and vote, use 'barplot'
+
+
+#OK, not very helpful. How can we restrict our plot to 'yes' or 'no' answers?
+
+
+```
+Let's try a scatterplot instead, use the 'plot' command
+
+```{r}
+
+# Create a logical index to subset the data. A logical index is a vector or array of Boolean (logical) values that indicate whether an element in a vector or array satisfies a certain condition. In this case, let's pretend we just care about the values of 1 and 4 in 'postvote_rvote'. What do these represent? Notice I had already assigned the variable to the object 'vote'.
+
+idx <- (vote %in% c(1, 4))
+
+# Create a scatterplot of the selected data and rename the axes. 
+
+#Maybe there's a more straightforward way to look at our data? Let's try tabulations. Use 'table' command assign it to the object 'tab' 
+
+
+#Name the rows and columns using the following syntax:
+#dimnames(tab) <- list(c("Row1", "Row2", "Row3"), c("Column1", "Column2"))
+
+
+```
+
+* What kind of questions can we answer with this data?
+* What kind of conclusions could we draw?
+* What are the limitations of the data?
+
+
+### Let's try plotting other variables. Pick another variable of interest within the demographic variables and another one within the postvote variables.
+```{r}
+
+#Plot a barplot. Advanced users use 'ggplot'
+
+#Plot a scatterplot.
+
+#Plot a density plot. 
+
+
+#Which type of graph makes most sense for the variables you selected? Why?
+
+```
+
