@@ -13,17 +13,24 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Setting up 
 ```{r}
-#install package 'tidyverse'
+#install package 'tidyverse'- for desktop users
 
-#load the package
+
+#load the packages
+library(tidyverse)
+library(IRkernel)
+library(dplyr)
 ```
 
 ## Bring in the data
 ```{r}
 #load the 'anes' data 
 
+anes <- read.csv("anes_latino.csv")
 
 #preview the data
+
+head(anes)
 
 ```
 Today, we will be using the 'trustgov_trustgrev' and 'dem_hisptyp_1st' variables. 
@@ -32,8 +39,97 @@ Today, we will be using the 'trustgov_trustgrev' and 'dem_hisptyp_1st' variables
 * What does the 'trustgov_trustgrev' measure? 
 
 ```{r}
-#subset variables so we only look at the continous measures (1-7 for 'dem_hisp_typ_1st' and 1-5 for 'trustgov_trustgrev')
+# Let's start with a barplot
+
+#Check for how many observations we have data for both variables
+
+#Note: all ggplots start with the same baseline: ggplot(df, aes(x = , y = )), and you add components from there, using the + sign
+
+ggplot(anes, aes(x=dem_hisptyp_1st, y= trustgov_trustgrev)) +
+  #geom_bar(stat = "identity")
+geom_col()
+
+
 
 
 ```
+```{r}
+#subset variables so we only look at the continuous measures (1-7 for 'dem_hisptyp_1st' and 1-5 for 'trustgov_trustgrev')
 
+anes <- read.csv("anes_latino.csv")
+
+anes2 <- anes %>%
+  filter(between(dem_hisptyp_1st, 1, 7), between(trustgov_trustgrev, 1, 5))
+
+#check variables' range to double check indexing
+
+range(anes$dem_hisptyp_1st)
+range(anes$trustgov_trustgrev)
+
+#check for how many observations we have data for both variables
+
+#plot bar plot
+ggplot(anes2, aes(x=dem_hisptyp_1st, y= (mean(trustgov_trustgrev, na.rm = TRUE)))) +
+  geom_bar(stat = "identity")
+
+#what do we need to fix here?
+
+#plot by mean per group
+
+#1. Mexican
+#2. Mexican-American 
+#3. Chicano
+#4. Puerto Rican 
+#5. Cuban 
+#6. Cuban-American
+#7. Other
+
+anes %>%
+  filter(between(dem_hisptyp_1st, 1, 7), between(trustgov_trustgrev, 1, 5)) %>%
+  group_by(dem_hisptyp_1st) %>%
+  summarize(mean_trustgov_trustgrev = mean(trustgov_trustgrev, na.rm = TRUE)) %>%
+  
+  ggplot(aes(x = reorder(dem_hisptyp_1st, desc(mean_trustgov_trustgrev)), y = mean_trustgov_trustgrev, fill = mean_trustgov_trustgrev)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient(low = "lightblue", high = "darkblue", name = "Mean Trust in Government") +
+  theme_classic() +
+  xlab("Demographic Hispanic Type 1st") +
+  ylab("Mean Trust in Government") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(labels = c("Cuban", "Other", "Mexican-American", "Mexican", "Chicano", "Puerto Rican", "Cuban-American"))
+
+ggsave("trust_by_type.png")
+```
+
+* How would you interpret this plot? 
+
+```{r}
+#Redo but now let's compare trust levels only for Puerto Ricans and Cubas. Plot a density plot, make sure to give them each a different color to differentiate. 
+
+anes %>%
+  filter(dem_hisptyp_1st %in% c(4, 5)) %>%
+  
+  ggplot(aes(x = trustgov_trustgrev, fill = factor(dem_hisptyp_1st))) +
+  geom_density(alpha = 0.5) +
+  scale_fill_manual(values = c("#1b9e77", "#d95f02")) +
+  xlab("Trust in Government") +
+  ylab("Density") +
+  ggtitle("Comparison of Trust in Government between Cubans and Puerto Ricans") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+anes %>%
+  filter(dem_hisptyp_1st %in% c(4, 5), trustgov_trustgrev %in% c(1:5)) %>%
+  ggplot(aes(x = trustgov_trustgrev, fill = factor(dem_hisptyp_1st, labels = c("Puerto Ricans", "Cubans")))) +
+  geom_density(alpha = 0.5) +
+   scale_fill_manual(values = c("#1b9e77", "#d95f02")) +
+  xlab("Trust in Government") +
+  ylab("Density") +
+  ggtitle("Comparison of Trust in Government between Cubans and Puerto Ricans") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(fill = "Hispanic Type") +
+  theme_classic()
+
+```
+
+* How would you interpret this other plot? What if we were to compare other groups; what would you expect?
