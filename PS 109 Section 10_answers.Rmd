@@ -1,0 +1,39 @@
+---
+title: "PS 109 Section 10_answers"
+author: "Johanna Reyes O."
+date: "2023-04-14"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Plotting with 'ggplot' (a very, very powerful tool!)
+
+## Setting up 
+```{r}
+#install package 'tidyverse'
+
+#load the package
+```
+
+## Bring in the data
+```{r}
+#load the 'anes' data 
+
+
+#preview the data
+
+```
+Today, we will be using the 'trustgov_trustgrev' and 'dem_hisptyp_1st' variables. 
+
+* What kind of variables are these?
+* What does the 'trustgov_trustgrev' measure? 
+
+```{r}
+#subset variables so we only look at the continous measures (1-7 for 'dem_hisp_typ_1st' and 1-5 for 'trustgov_trustgrev')
+
+
+```
+
