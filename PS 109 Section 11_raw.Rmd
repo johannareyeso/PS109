@@ -18,9 +18,9 @@ library(stats)
 
 Today, we will be using the "prevote_voted", "trustgov_trustgrev" and the "dem_hisptyp_1st" variable.
 
-* The "prevote_voted" notes whether a responded voted in the last General Election. We will need to subset the data so that we only look into 'yes' and 'no' responses (0, 1).
+*The "prevote_voted" notes whether a responded voted in the last General Election. We will need to subset the data so that we only look into 'yes' and 'no' responses (1, 0).
 
-* The trustgov_trustgrev variable stands for trust in governemnt. We will also need to subset the data so we only use responses within the 1:5 range (always to never), ignoring those who responded -1 (inapplicable), -8 (don't know), or -9 (refused).
+*The trustgov_trustgrev variable stands for trust in governemnt. We will also need to subset the data so we only use responses within the 1:5 range (always to never), ignoring those who responded -1 (inapplicable), -8 (don't know), or -9 (refused).
 
 ### 1. How do we count total number of observations (i.e. the total number of respondents) within a dataframe?
 
