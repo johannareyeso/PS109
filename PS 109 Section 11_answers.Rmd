@@ -1,0 +1,149 @@
+---
+title: "PS109_Asng2_answers"
+author: "Johanna Reyes O."
+date: "2023-04-18"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(stats)
+```
+
+## Basics recap, using the "anes_latino" data 
+
+Today, we will be using the "prevote_voted", "trustgov_trustgrev" and the "dem_hisptype_1st" variable.
+* The "prevote_voted" notes whether a responded voted in the last General Election. We will need to subset the data so that we only look into 'yes' and 'no' responses (0, 1).
+* The trustgov_trustgrev variable stands for trust in governemnt. We will also need to subset the data so we only use responses within the 1:5 range (always to never), ignoring those who responded -1 (inapplicable), -8 (don't know), or -9 (refused).
+
+### 1. How do we count total number of observations (i.e. the total number of respondents) within a dataframe?
+
+```{r}
+#read data
+lines <- read.csv("lines.csv")
+
+#total observations
+nrow(lines) #1304
+```
+### 2. How do we know for how many respondents we have information about one variable? (check first prevote_voted, then dem_hisptype_1st) 
+
+```{r}
+#info for origin
+sum(!is.na(lines$origin)) #1304
+
+#info for polengagement 
+sum(!is.na(lines$polengagement)) #879
+```
+### 3. How do we know for how many respondents we have information for two variables? (check for dem_hisptype_1st AND prevote_voted)
+
+```{r}
+sum(!is.na(lines$polengagement) & !is.na(lines$origin)) #879
+
+```
+### 4. Compute a bar plot with the average value of trust in government (in the y-axis) by first mention of Hispanic origin (in the x-axis). Order the bars from the group with the highest to the lowest trust in government.
+
+```{r}
+
+ggplot(lines, aes(origin, mean(polengagement, na.rm = T))) +
+    geom_col() +
+    labs(x = "Country of Origin", y = "Average Political Engagement")
+
+lines %>%
+  filter(origin %in% c("mexican", "south american", "cuban", "dominican", "central american")) %>%
+  group_by(origin) %>%
+  summarize(mean_pol = mean(polengagement, na.rm = TRUE)) %>%
+  
+  ggplot(aes(reorder(origin, -mean_pol), mean_pol, fill = origin)) +
+    geom_col() +
+    labs(x = "Country of Origin", y = "Average Political Engagement")+
+   geom_text(aes(label = round(mean_pol,2)), vjust=-0.3, size=3.5)
+
+```
+### 5. 
+
+* What is the average value of political engagement for Cuban-origin immigrants? .24
+* What is the average value of political engagement for Mexican-origin immigrants? .1
+
+## e. In one plot, compare the distribution of patriotism toward the US between naturalized and non-naturalized respondents. Make sure that your plot distinguishes the patriotism distribution of naturalized respondents from that of non-naturalized respondents (e.g. with a different color and a label). Make sure to display your plot. (1 point)
+
+* fill = as.factor(citizen): This maps the citizen variable to the fill color of the density plot. The as.factor() function is used to convert the citizen variable to a factor, which is required for fill colors to work properly in ggplot2.
+
+* color = as.factor(citizen): This maps the citizen variable to the line color of the density plot. The as.factor() function is used to convert the citizen variable to a factor, which is required for line colors to work properly in ggplot2.
+
+* alpha = 0.5: This sets the transparency of the density plot to 50%, making it easier to see overlapping areas of the plot.
+```{r}
+#uspatriot and citizen
+
+  ggplot(lines, aes(x = uspatriot, fill = factor(citizen))) +
+  geom_density(alpha = 0.7)
+   
+#need to remove nas: two ways
+
+ggplot(data = na.omit(lines), aes(x = uspatriot, fill = factor(citizen))) +
+  geom_density(alpha = 0.5)+
+  ylab('density') + xlab('patriotism toward US') +
+  scale_fill_discrete(name = "citizenship status", labels = c("Non-citizen", "Citizen"))
+
+
+#or
+
+lines %>%
+  filter(citizen %in% c(1, 0)) %>%
+  ggplot(aes(x = uspatriot, fill = factor(citizen, labels = c("Citizen", "Non-citizen")))) +
+  geom_density(alpha = 0.5) +
+   #scale_fill_manual(values = c("#1b9e77", "#d95f02"))+
+  labs(fill="Citizenship Status")
+
+#knit or save using ggsave
+
+ggsave("density.png")
+
+```
+# Section 2
+## b. Compute a scatter plot displaying the correlation between Latino immigrants' attachment to a Latino identity (in the x-axis) and partisan attachment to the Democratic Party (in the y-axis). In your plot, make sure to include a linear regression line summarizing the correlation. Make sure to display your plot. (1 point)
+```{r}
+ggplot(lines, aes(x = hispattach, y = partisanship))+
+  geom_point()+
+ geom_smooth(method=lm) +
+  xlab('Latinx Attachment') +
+  ylab('Democratic Attachment')
+
+
+#How can we look at the actual regression estimation?
+```
+## d. Now, compute a scatter plot displaying the correlation between Latino immigrants’ attachment to a Latino identity (in the x-axis) and partisan attachment to the Democratic Party (in the y-axis), identifying with a different color Latino immigrants who perceive high discrimination against Latinos from those who perceive low discrimination against Latinos. Make sure to include a linear regression line summarizing the correlation for each of these two groups (i.e. high/low perception of discrimination). Tip: make a “scatter plot by group” in ggplot2. Make sure to display your plot. (1 point)
+
+```{r}
+ggplot(lines, aes(x = hispattach, y = partisanship, color=hispdisc_high)) +
+  geom_point() +
+  geom_smooth(method=lm) +
+  xlab('Latino attachment') +
+  ylab('Democratic attachment')
+
+#check for NAs
+uq <- unique(lines$hispdisc_high)
+print(uq)
+
+lines %>%
+  filter(hispdisc_high %in% c(1, 0)) %>%
+  group_by(hispdisc_high) %>%
+ggplot(aes(x = hispattach, y = partisanship, color= as.factor(hispdisc_high))) +
+  geom_point() +
+  geom_smooth(method=lm)
+
+#or
+
+ggplot(data = na.omit(lines), aes(x = hispattach, y = partisanship, color=as.factor(hispdisc_high))) +
+  geom_point() +
+  geom_smooth(method=lm)+
+  labs(color = "Perceived Discrimination")
+
+
+```
+
+
+

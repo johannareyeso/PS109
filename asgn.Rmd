@@ -1,0 +1,13 @@
+---
+title: "assignment 2"
+author: "Johanna Reyes O."
+date: "2023-04-11"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+hshfh
